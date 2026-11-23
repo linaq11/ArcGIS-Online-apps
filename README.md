@@ -1,6 +1,6 @@
 # ArcGIS Online Apps
 
-ArcGIS Online and Experience Builder apps built from my remote sensing work, with the Python that prepares and publishes every layer.
+ArcGIS Online and Experience Builder apps built from my remote sensing work, with the Python that prepares and publishes every layer: a time-enabled flood map of La Mojana (Colombia) and a 3D lidar point cloud scene of the Everglades mangroves (Florida).
 
 ## La Mojana flood by municipality
 
@@ -52,8 +52,31 @@ The Experience Builder app was assembled in the Experience Builder editor; it is
 * Same as the flood maps: radar misses water under flooded vegetation, and a rainy season larger than those of 2020 and 2021 would also count as new flood.
 * Municipal figures cover only the part of each municipality inside the study area.
 
+## Mangrove canopy in airborne lidar and GEDI, Everglades
+
+**App: https://experience.arcgis.com/experience/7155019c6d364d949bdc9c0824d93759**
+
+The USGS 3DEP airborne lidar of 2018 over the Shark River mangroves in Everglades National Park, Florida, as a 3D point cloud scene layer, with the 520 GEDI shots of the preregistered comparison in [lidar-mangrove-canopy](https://github.com/linaq11/lidar-mangrove-canopy) drawn at the height GEDI measured.
+
+![Experience Builder app: lidar point cloud coloured by height with the GEDI shots](agol/app_lidar.jpg)
+
+* **Point cloud.** 330 million points in a 2.3 by 2.3 km window, the one shown in the lidar dashboard, coloured by height. The noise classes (7, low noise, and 18, high noise, with points up to 533 m) are left out because they would draw as false spikes.
+* **GEDI shots.** GEDI L2A, 2019 to 2025. Each circle floats at the shot's RH98 above the ground and is coloured by RH98 minus the lidar's 98th percentile in the same 12.5 m footprint, blue where GEDI is lower and red where it is higher.
+* **Result** (from lidar-mangrove-canopy): bias of −0.13 m and RMSE of 1.86 m for beam sensitivity of 0.95 to 0.98 (329 shots), and +0.08 m and 1.86 m for 0.98 or more (191 shots); the difference in absolute bias, 0.04 m, had a 95% interval of −0.26 to 0.26 m, so no difference was detected.
+* **ArcGIS.** The points are cut from the cached EPT nodes into 500 m UTM 17N LAZ tiles, packaged in ArcGIS Pro as a point cloud scene layer package (2.8 GB) and published as a scene layer; the GEDI shots are a hosted feature layer; the web scene and the app hold both.
+
+```bash
+python ../lidar-mangrove-canopy/scripts/export_scene_tiles.py --cache <ept cache> --out <tiles>   # LAZ tiles
+# with ArcGIS Pro's Python:
+python scripts/make_lidar_scene.py --tiles <tiles> --work <work folder>                         # LAS dataset and .slpk
+python scripts/make_lidar_webscene.py <scene-service-id> <scene-package-id>                     # web scene
+python scripts/publish_gedi_shots.py ../lidar-mangrove-canopy/data/gedi_vs_lidar.csv <web-scene-id>
+```
+
+The upload of the 2.8 GB package failed through the ArcGIS API for Python ("Failed to upload all parts") and was done with ArcGIS Pro's Share Package tool instead.
+
 ## Credits
 
-Radar: Copernicus Sentinel-1 (ESA). Permanent water: JRC Global Surface Water (Pekel et al., 2016). Municipalities: DANE, Marco Geoestadístico Nacional 2025. Basemap: Esri World Imagery.
+Radar: Copernicus Sentinel-1 (ESA). Permanent water: JRC Global Surface Water (Pekel et al., 2016). Municipalities: DANE, Marco Geoestadístico Nacional 2025. Airborne lidar: U.S. Geological Survey, 3D Elevation Program (FL_WestEvergladesNP 2018). GEDI: NASA, GEDI L2A. Basemap: Esri World Imagery.
 
 Lina María Quintero Fonseca, geographer, MSc student in Geomatics at the Universidad Nacional de Colombia. Code under the MIT License; to cite, use `CITATION.cff`.
