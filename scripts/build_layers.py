@@ -30,6 +30,7 @@ def main() -> None:
     geom = {f["properties"]["MPIO_CDPMP"]: shape(f["geometry"]) for f in gj["features"]}
     out = ROOT / "agol"
     out.mkdir(exist_ok=True)
+    d = d[d.box_km2 > 0]          # El Roble (Sucre) only touches the edge of the box: no area inside
     ok = d[d.scenes > 0]
 
     # one feature per municipality

@@ -1,0 +1,4 @@
+agol/*.gdb/
+agol/*.gdb.zip
+__pycache__/
+data/municipal_monthly_raw.csv
